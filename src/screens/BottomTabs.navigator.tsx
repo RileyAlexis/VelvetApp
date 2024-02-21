@@ -16,7 +16,7 @@ export const BottomTabsNavigator: React.FC = () => {
                         backgroundColor: 'transparent',
                     },
                     headerBackground: () => (
-                        <LinearGradient colors={['pink', 'white', 'blue']}
+                        <LinearGradient colors={['pink', 'white', 'pink', 'lightblue', 'white', 'lightblue']}
                             style={{ flex: 1 }}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
