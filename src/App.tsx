@@ -1,10 +1,15 @@
 import React from 'react';
 import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { BottomTabsNavigator } from './screens/BottomTabs.navigator';
+
 
 export const App: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <Text>This is my React Native Application</Text>
+      <NavigationContainer>
+        <BottomTabsNavigator />
+      </NavigationContainer>
     </SafeAreaView>
   );
 };
@@ -12,6 +17,6 @@ export const App: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'teal',
+    backgroundColor: 'white',
   },
 });
