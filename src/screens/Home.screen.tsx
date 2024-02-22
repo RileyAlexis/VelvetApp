@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, Pressable, Vibration } from "react-native";
+import { StyleSheet, View, Text, Pressable, Vibration, TouchableHighlight } from "react-native";
+
 
 export const Home: React.FC = () => {
 
