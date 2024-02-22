@@ -1,10 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Pressable, Vibration, TouchableHighlight } from "react-native";
+import { StyleSheet, View, Text, Pressable, Vibration } from "react-native";
+
+import LiveAudioStream from 'react-native-live-audio-stream';
 
 export const Home: React.FC = () => {
 
     const [buttonColor, setButtonColor] = useState<string>('green');
     const [recColor, setRecColor] = useState<string>('lightgreen');
+    let micData = '0';
+
+    const options = {
+        sampleRate: 32000,
+        channels: 1,
+        bitsPerSample: 16,
+        audioSource: 6,
+        bufferSize: 4096
+    }
+
 
     const handlePress = () => {
         Vibration.vibrate(10);
@@ -17,10 +29,14 @@ export const Home: React.FC = () => {
         setRecColor(() => (
             recColor === 'lightgreen' ? 'red' : 'lightgreen'
         ));
+        recColor === 'lightgreen' ? LiveAudioStream.start() : LiveAudioStream.stop();
     }
 
     useEffect(() => {
 
+        LiveAudioStream.init(options);
+        micData = LiveAudioStream.on('data', data => {
+        })
     }, []);
 
     return (
@@ -31,6 +47,11 @@ export const Home: React.FC = () => {
             <Pressable onPress={handleMic}>
                 <View style={[styles.button, { backgroundColor: recColor }]} />
             </Pressable>
+            <View>
+                <Text>
+                    {micData}
+                </Text>
+            </View>
         </View>
     )
 }
