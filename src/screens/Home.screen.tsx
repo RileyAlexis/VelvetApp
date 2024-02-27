@@ -1,22 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Pressable, Vibration } from "react-native";
+import { StyleSheet, View, Text, Pressable, Vibration, Alert } from "react-native";
 
-import LiveAudioStream from 'react-native-live-audio-stream';
+import { Audio, } from "expo-av";
 
 export const Home: React.FC = () => {
 
     const [buttonColor, setButtonColor] = useState<string>('green');
     const [recColor, setRecColor] = useState<string>('lightgreen');
-    let micData = '0';
-
-    const options = {
-        sampleRate: 32000,
-        channels: 1,
-        bitsPerSample: 16,
-        audioSource: 6,
-        bufferSize: 4096
-    }
-
+    const [recording, setRecording] = useState();
+    const [permissionResponse, requestPermission] = Audio.usePermissions();
 
     const handlePress = () => {
         Vibration.vibrate(10);
@@ -25,18 +17,48 @@ export const Home: React.FC = () => {
         ));
     }
 
+    const startRecording = async () => {
+        try {
+            if (permissionResponse?.status !== 'granted') {
+                console.log('Requesting Permission');
+                await requestPermission();
+            }
+            await Audio.setAudioModeAsync({
+                allowsRecordingIOS: true,
+                playsInSilentModeIOS: true,
+            });
+
+            console.log('Starting Recording');
+            const { recording } = await Audio.Recording.createAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+            setRecording(recording);
+            console.log('Recording Started', recording);
+        } catch (error) {
+            console.error('Failed to start recording', error);
+        }
+    }
+
+    const stopRecording = async () => {
+        console.log('Stopping Recording');
+        setRecording(undefined);
+        await recording.stopAndUnloadAsync();
+        await Audio.setAudioModeAsync({
+            allowsRecordingIOS: false,
+        });
+        const uri = recording.getURI();
+        console.log('Recording stopped and stored at', uri);
+    };
+
     const handleMic = () => {
         setRecColor(() => (
             recColor === 'lightgreen' ? 'red' : 'lightgreen'
         ));
-        recColor === 'lightgreen' ? LiveAudioStream.start() : LiveAudioStream.stop();
+        if (recording) stopRecording();
+        else startRecording();
     }
 
     useEffect(() => {
 
-        LiveAudioStream.init(options);
-        micData = LiveAudioStream.on('data', data => {
-        })
+
     }, []);
 
     return (
@@ -47,11 +69,6 @@ export const Home: React.FC = () => {
             <Pressable onPress={handleMic}>
                 <View style={[styles.button, { backgroundColor: recColor }]} />
             </Pressable>
-            <View>
-                <Text>
-                    {micData}
-                </Text>
-            </View>
         </View>
     )
 }
